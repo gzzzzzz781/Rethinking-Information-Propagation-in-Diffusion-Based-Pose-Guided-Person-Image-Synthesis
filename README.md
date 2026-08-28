@@ -152,27 +152,3 @@ python demo_edit.py --source donor.jpg --reference target.jpg --pose target_dens
 ```
 
 The script also saves a comparison image by default. Use `--no-comparison` to disable it. Use `--validate-only` to validate the source, reference, DensePose, and mask without loading the model.
-
-## 10. Appearance Style Interpolation
-
-`demo_interpolate.py` interpolates the model's multi-scale reference features between two appearance images. All frames use the same initial noise so that the visual change mainly comes from the appearance interpolation. Refiner post-processing is disabled by default.
-
-Generate 11 transition frames with one fixed 3-channel DensePose:
-
-```powershell
-python demo_interpolate.py --style1 style_1.jpg --style2 style_2.jpg --pose target_densepose.png --frames 11 --interpolation linear --checkpoint checkpoints/new_diffusion/last.pt --output-dir outputs/style_interpolation --strip-output outputs/style_interpolation.png --batch-size 1 --resolution 512 --sampler ddim --steps 50 --source-guidance-scale 3.0 --pose-guidance-scale 3.0 --seed 42 --device auto
-```
-
-Use an ordered directory of DensePose images to change pose during the appearance transition:
-
-```powershell
-python demo_interpolate.py --style1 style_1.jpg --style2 style_2.jpg --pose-dir densepose_sequence --frames 11 --interpolation linear --checkpoint checkpoints/new_diffusion/last.pt --output-dir outputs/style_interpolation_pose_sequence --strip-output outputs/style_interpolation_pose_sequence.png --batch-size 1 --resolution 512 --sampler ddim --steps 50 --source-guidance-scale 3.0 --pose-guidance-scale 3.0 --seed 42 --device auto
-```
-
-Add `--refine` to post-process every generated frame with Refiner:
-
-```powershell
-python demo_interpolate.py --style1 style_1.jpg --style2 style_2.jpg --pose target_densepose.png --frames 11 --interpolation linear --checkpoint checkpoints/new_diffusion/last.pt --refine --refiner-checkpoint checkpoints/refiner/last.pt --output-dir outputs/style_interpolation_refined --strip-output outputs/style_interpolation_refined.png --batch-size 1 --resolution 512 --sampler ddim --steps 50 --source-guidance-scale 3.0 --pose-guidance-scale 3.0 --seed 42 --device auto
-```
-
-Available interpolation modes are `linear` and `slerp`. Individual frames and `manifest.json` are always saved under `--output-dir`; a horizontal summary image is also saved unless `--no-strip` is specified. Use `--validate-only` to validate the appearance and DensePose inputs without loading the model.
